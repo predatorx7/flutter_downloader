@@ -50,19 +50,35 @@ class DownloadTask {
   final int progress;
   final String url;
   final String? filename;
+  final String? label;
   final String savedDir;
   final int timeCreated;
 
-  DownloadTask(
-      {required this.taskId,
-      required this.status,
-      required this.progress,
-      required this.url,
-      required this.filename,
-      required this.savedDir,
-      required this.timeCreated});
+  DownloadTask({
+    required this.taskId,
+    required this.status,
+    required this.progress,
+    required this.url,
+    required this.filename,
+    required this.label,
+    required this.savedDir,
+    required this.timeCreated,
+  });
 
   @override
   String toString() =>
-      "DownloadTask(taskId: $taskId, status: $status, progress: $progress, url: $url, filename: $filename, savedDir: $savedDir, timeCreated: $timeCreated)";
+      "DownloadTask(taskId: $taskId, status: $status, progress: $progress, url: $url, filename: $filename, label: $label, savedDir: $savedDir, timeCreated: $timeCreated)";
+
+  factory DownloadTask.fromMap(dynamic item) {
+    return new DownloadTask(
+      taskId: item['task_id'],
+      status: DownloadTaskStatus(item['status']),
+      progress: item['progress'],
+      label: item['label'],
+      url: item['url'],
+      filename: item['file_name'],
+      savedDir: item['saved_dir'],
+      timeCreated: item['time_created'],
+    );
+  }
 }

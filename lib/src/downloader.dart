@@ -68,15 +68,17 @@ class FlutterDownloader {
   ///
   /// an unique identifier of the new download task
   ///
-  static Future<String?> enqueue(
-      {required String url,
-      required String savedDir,
-      String? fileName,
-      Map<String, String>? headers,
-      bool showNotification = true,
-      bool openFileFromNotification = true,
-      bool requiresStorageNotLow = true,
-      bool saveInPublicStorage = false}) async {
+  static Future<String?> enqueue({
+    required String url,
+    required String savedDir,
+    String? fileName,
+    String? label,
+    Map<String, String>? headers,
+    bool showNotification = true,
+    bool openFileFromNotification = true,
+    bool requiresStorageNotLow = true,
+    bool saveInPublicStorage = false,
+  }) async {
     assert(_initialized, 'FlutterDownloader.initialize() must be called first');
     assert(Directory(savedDir).existsSync());
 
@@ -94,6 +96,7 @@ class FlutterDownloader {
         'url': url,
         'saved_dir': savedDir,
         'file_name': fileName,
+        'label': label,
         'headers': headerBuilder.toString(),
         'show_notification': showNotification,
         'open_file_from_notification': openFileFromNotification,
@@ -119,16 +122,7 @@ class FlutterDownloader {
 
     try {
       List<dynamic> result = await _channel.invokeMethod('loadTasks');
-      return result
-          .map((item) => new DownloadTask(
-              taskId: item['task_id'],
-              status: DownloadTaskStatus(item['status']),
-              progress: item['progress'],
-              url: item['url'],
-              filename: item['file_name'],
-              savedDir: item['saved_dir'],
-              timeCreated: item['time_created']))
-          .toList();
+      return result.map((item) => new DownloadTask.fromMap(item)).toList();
     } on PlatformException catch (e) {
       print(e.message);
       return null;
@@ -162,16 +156,7 @@ class FlutterDownloader {
     try {
       List<dynamic> result = await _channel
           .invokeMethod('loadTasksWithRawQuery', {'query': query});
-      return result
-          .map((item) => new DownloadTask(
-              taskId: item['task_id'],
-              status: DownloadTaskStatus(item['status']),
-              progress: item['progress'],
-              url: item['url'],
-              filename: item['file_name'],
-              savedDir: item['saved_dir'],
-              timeCreated: item['time_created']))
-          .toList();
+      return result.map((item) => DownloadTask.fromMap(item)).toList();
     } on PlatformException catch (e) {
       print(e.message);
       return null;

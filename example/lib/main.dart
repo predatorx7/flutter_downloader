@@ -204,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       onItemClick: (task) {
                         _openDownloadedFile(task).then((success) {
                           if (!success) {
-                            Scaffold.of(context).showSnackBar(SnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 content: Text('Cannot open this file')));
                           }
                         });
@@ -284,6 +284,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _requestDownload(_TaskInfo task) async {
     task.taskId = await FlutterDownloader.enqueue(
       url: task.link!,
+      label: task.name,
       headers: {"auth": "test_for_sql_encoding"},
       savedDir: _localPath,
       showNotification: true,

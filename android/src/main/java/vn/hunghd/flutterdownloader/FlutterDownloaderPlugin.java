@@ -117,7 +117,7 @@ public class FlutterDownloaderPlugin implements MethodCallHandler, FlutterPlugin
         }
     }
 
-    private WorkRequest buildRequest(String url, String savedDir, String filename, String headers,
+    private WorkRequest buildRequest(String url, String savedDir, String filename, String label, String headers,
                                      boolean showNotification, boolean openFileFromNotification,
                                      boolean isResume, boolean requiresStorageNotLow, boolean saveInPublicStorage) {
         WorkRequest request = new OneTimeWorkRequest.Builder(DownloadWorker.class)
@@ -131,6 +131,7 @@ public class FlutterDownloaderPlugin implements MethodCallHandler, FlutterPlugin
                         .putString(DownloadWorker.ARG_URL, url)
                         .putString(DownloadWorker.ARG_SAVED_DIR, savedDir)
                         .putString(DownloadWorker.ARG_FILE_NAME, filename)
+                        .putString(DownloadWorker.ARG_LABEL, label)
                         .putString(DownloadWorker.ARG_HEADERS, headers)
                         .putBoolean(DownloadWorker.ARG_SHOW_NOTIFICATION, showNotification)
                         .putBoolean(DownloadWorker.ARG_OPEN_FILE_FROM_NOTIFICATION, openFileFromNotification)
@@ -173,12 +174,13 @@ public class FlutterDownloaderPlugin implements MethodCallHandler, FlutterPlugin
         String url = call.argument("url");
         String savedDir = call.argument("saved_dir");
         String filename = call.argument("file_name");
+        String label = call.argument("label");
         String headers = call.argument("headers");
         boolean showNotification = call.argument("show_notification");
         boolean openFileFromNotification = call.argument("open_file_from_notification");
         boolean requiresStorageNotLow = call.argument("requires_storage_not_low");
         boolean saveInPublicStorage = call.argument("save_in_public_storage");
-        WorkRequest request = buildRequest(url, savedDir, filename, headers, showNotification,
+        WorkRequest request = buildRequest(url, savedDir, filename, label, headers, showNotification,
                 openFileFromNotification, false, requiresStorageNotLow, saveInPublicStorage);
         WorkManager.getInstance(context).enqueue(request);
         String taskId = request.getId().toString();
@@ -197,6 +199,7 @@ public class FlutterDownloaderPlugin implements MethodCallHandler, FlutterPlugin
             item.put("status", task.status);
             item.put("progress", task.progress);
             item.put("url", task.url);
+            item.put("label", task.label);
             item.put("file_name", task.filename);
             item.put("saved_dir", task.savedDir);
             item.put("time_created", task.timeCreated);
@@ -215,6 +218,7 @@ public class FlutterDownloaderPlugin implements MethodCallHandler, FlutterPlugin
             item.put("status", task.status);
             item.put("progress", task.progress);
             item.put("url", task.url);
+            item.put("label", task.label);
             item.put("file_name", task.filename);
             item.put("saved_dir", task.savedDir);
             item.put("time_created", task.timeCreated);
@@ -257,7 +261,7 @@ public class FlutterDownloaderPlugin implements MethodCallHandler, FlutterPlugin
                 String partialFilePath = task.savedDir + File.separator + filename;
                 File partialFile = new File(partialFilePath);
                 if (partialFile.exists()) {
-                    WorkRequest request = buildRequest(task.url, task.savedDir, task.filename,
+                    WorkRequest request = buildRequest(task.url, task.savedDir, task.filename, task.label,
                             task.headers, task.showNotification, task.openFileFromNotification,
                             true, requiresStorageNotLow, task.saveInPublicStorage);
                     String newTaskId = request.getId().toString();
@@ -283,7 +287,7 @@ public class FlutterDownloaderPlugin implements MethodCallHandler, FlutterPlugin
         boolean requiresStorageNotLow = call.argument("requires_storage_not_low");
         if (task != null) {
             if (task.status == DownloadStatus.FAILED || task.status == DownloadStatus.CANCELED) {
-                WorkRequest request = buildRequest(task.url, task.savedDir, task.filename,
+                WorkRequest request = buildRequest(task.url, task.savedDir, task.filename, task.label,
                         task.headers, task.showNotification, task.openFileFromNotification,
                         false, requiresStorageNotLow, task.saveInPublicStorage);
                 String newTaskId = request.getId().toString();

@@ -325,6 +325,7 @@ CREATE TABLE `task` (
 	`status`	INTEGER DEFAULT 0,
 	`progress`	INTEGER DEFAULT 0,
 	`file_name`	TEXT,
+	`label`	TEXT,
 	`saved_dir`	TEXT,
 	`resumable`	TINYINT DEFAULT 0,
 	`headers`	TEXT,
