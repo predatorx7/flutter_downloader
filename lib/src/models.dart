@@ -74,7 +74,7 @@ class DownloadTask {
       "DownloadTask(taskId: $taskId, status: $status, progress: $progress, url: $url, filename: $filename, label: $label, savedDir: $savedDir, timeCreated: $timeCreated)";
 
   factory DownloadTask.fromMap(dynamic item) {
-    return new DownloadTask(
+    return DownloadTask(
       taskId: item['task_id'],
       status: DownloadTaskStatus(item['status']),
       progress: item['progress'],
