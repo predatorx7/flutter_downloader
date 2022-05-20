@@ -14,7 +14,7 @@ const debug = true;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FlutterDownloader.initialize(debug: debug);
+  await FlutterDownloader.initialize(debug: debug, ignoreSsl: true);
 
   runApp(new MyApp());
 }
@@ -327,6 +327,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<bool> _checkPermission() async {
+    if (Platform.isIOS) return true;
+
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     if (widget.platform == TargetPlatform.android &&
